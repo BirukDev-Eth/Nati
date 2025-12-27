@@ -130,13 +130,20 @@ DATABASES = {
 # EMAIL
 # --------------------------------------------------
 
+
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
+
+EMAIL_HOST = "smtp.gmail.com"        # or your provider
 EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_USE_TLS = True                 # REQUIRED for 587
+EMAIL_USE_SSL = False
+
 EMAIL_HOST_USER = "eyasuone01@gmail.com"
 EMAIL_HOST_PASSWORD = "mzoa evwn wrks tomf"
-DEFAULT_FROM_EMAIL = "eyasuone01@gmail.com"
+
+EMAIL_TIMEOUT = 10                   # VERY IMPORTANT (prevents Gunicorn timeout)
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 # --------------------------------------------------
 # PASSWORD VALIDATION
