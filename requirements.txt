@@ -1,4 +1,5 @@
-Django
-django-cors-headers
-djangorestframework
-psycopg2
+Django>=4.2
+django-cors-headers>=4.0
+djangorestframework>=3.14
+psycopg2>=2.9
+python-dotenv>=1.0
