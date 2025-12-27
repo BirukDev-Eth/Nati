@@ -2,8 +2,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
-from apps.project.serializers import ProjectSerializer
 from .models import Project
 from .serializers import ProjectSerializer
 from apps.users.models import User
@@ -30,27 +28,25 @@ def get_user_from_token(request):
         return None, Response({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
 
 # -------------------------
-# List & Create Experiences
+# List & Create Projects
 # -------------------------
 class ProjectListCreate(APIView):
 
     def get(self, request):
-        user, error = get_user_from_token(request)
-        if error:
-            return error  # token invalid, return 401
-
+        # GET is public, no token required
         projects = Project.objects.all()
         serializer = ProjectSerializer(projects, many=True)
         return Response(serializer.data)
 
     def post(self, request):
+        # POST requires token
         user, error = get_user_from_token(request)
         if error:
-            return error  # token invalid, return 401
+            return error
 
         serializer = ProjectSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user=user)  # assign user from token
+            serializer.save(user=user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -66,18 +62,15 @@ class ProjectRetrieveUpdateDelete(APIView):
             return None
 
     def get(self, request, pk):
-        user, error = get_user_from_token(request)
-        if error:
-            return error
-
+        # GET is public, no token required
         project = self.get_object(pk)
         if not project:
             return Response({'error': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
-
         serializer = ProjectSerializer(project)
         return Response(serializer.data)
 
     def put(self, request, pk):
+        # PUT requires token
         user, error = get_user_from_token(request)
         if error:
             return error
@@ -93,13 +86,14 @@ class ProjectRetrieveUpdateDelete(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
+        # DELETE requires token
         user, error = get_user_from_token(request)
         if error:
             return error
 
-        experience = self.get_object(pk)
-        if not experience:
-            return Response({'error': 'Experience not found'}, status=status.HTTP_404_NOT_FOUND)
+        project = self.get_object(pk)
+        if not project:
+            return Response({'error': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        experience.delete()
-        return Response({'message': 'Experience deleted'}, status=status.HTTP_204_NO_CONTENT)
+        project.delete()
+        return Response({'message': 'Project deleted'}, status=status.HTTP_204_NO_CONTENT)

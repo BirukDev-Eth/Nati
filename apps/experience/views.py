@@ -33,22 +33,20 @@ def get_user_from_token(request):
 class ExperienceListCreate(APIView):
 
     def get(self, request):
-        user, error = get_user_from_token(request)
-        if error:
-            return error  # token invalid, return 401
-
+        # GET is public
         experiences = Experience.objects.all()
         serializer = ExperienceSerializer(experiences, many=True)
         return Response(serializer.data)
 
     def post(self, request):
+        # POST requires token
         user, error = get_user_from_token(request)
         if error:
-            return error  # token invalid, return 401
+            return error
 
         serializer = ExperienceSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user=user)  # assign user from token
+            serializer.save(user=user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -64,10 +62,7 @@ class ExperienceRetrieveUpdateDelete(APIView):
             return None
 
     def get(self, request, pk):
-        user, error = get_user_from_token(request)
-        if error:
-            return error
-
+        # GET is public
         experience = self.get_object(pk)
         if not experience:
             return Response({'error': 'Experience not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -76,6 +71,7 @@ class ExperienceRetrieveUpdateDelete(APIView):
         return Response(serializer.data)
 
     def put(self, request, pk):
+        # PUT requires token
         user, error = get_user_from_token(request)
         if error:
             return error
@@ -91,6 +87,7 @@ class ExperienceRetrieveUpdateDelete(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
+        # DELETE requires token
         user, error = get_user_from_token(request)
         if error:
             return error

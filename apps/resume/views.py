@@ -28,27 +28,25 @@ def get_user_from_token(request):
         return None, Response({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
 
 # -------------------------
-# List & Create Experiences
+# List & Create Resumes
 # -------------------------
 class ResumeListCreate(APIView):
 
     def get(self, request):
-        user, error = get_user_from_token(request)
-        if error:
-            return error  # token invalid, return 401
-
+        # GET is public
         resumes = Resume.objects.all()
         serializer = ResumeSerializer(resumes, many=True)
         return Response(serializer.data)
 
     def post(self, request):
+        # POST requires token
         user, error = get_user_from_token(request)
         if error:
-            return error  # token invalid, return 401
+            return error
 
         serializer = ResumeSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user=user)  # assign user from token
+            serializer.save(user=user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -63,10 +61,7 @@ class ResumeRetrieveUpdateDelete(APIView):
             return None
 
     def get(self, request, pk):
-        user, error = get_user_from_token(request)
-        if error:
-            return error
-
+        # GET is public
         resume = self.get_object(pk)
         if not resume:
             return Response({'error': 'Resume not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -75,13 +70,14 @@ class ResumeRetrieveUpdateDelete(APIView):
         return Response(serializer.data)
 
     def put(self, request, pk):
+        # PUT requires token
         user, error = get_user_from_token(request)
         if error:
             return error
 
-        experience = self.get_object(pk)
-        if not experience:
-            return Response({'error': 'Experience not found'}, status=status.HTTP_404_NOT_FOUND)
+        resume = self.get_object(pk)
+        if not resume:
+            return Response({'error': 'Resume not found'}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = ResumeSerializer(resume, data=request.data)
         if serializer.is_valid():
@@ -90,13 +86,14 @@ class ResumeRetrieveUpdateDelete(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
+        # DELETE requires token
         user, error = get_user_from_token(request)
         if error:
             return error
 
         resume = self.get_object(pk)
         if not resume:
-            return Response({'error': 'Experience not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Resume not found'}, status=status.HTTP_404_NOT_FOUND)
 
         resume.delete()
-        return Response({'message': 'Experience deleted'}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'message': 'Resume deleted'}, status=status.HTTP_204_NO_CONTENT)

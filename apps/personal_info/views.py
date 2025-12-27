@@ -28,27 +28,25 @@ def get_user_from_token(request):
         return None, Response({'error': 'Invalid token'}, status=status.HTTP_401_UNAUTHORIZED)
 
 # -------------------------
-# List & Create Experiences
+# List & Create Experiences / Personal Info
 # -------------------------
 class PersonalInfoListCreate(APIView):
 
     def get(self, request):
-        user, error = get_user_from_token(request)
-        if error:
-            return error  # token invalid, return 401
-
+        # GET is public, no token required
         personalInfos = personal_info.objects.all()
         serializer = PersonalInfoSerializer(personalInfos, many=True)
         return Response(serializer.data)
 
     def post(self, request):
+        # POST requires token
         user, error = get_user_from_token(request)
         if error:
-            return error  # token invalid, return 401
+            return error
 
         serializer = PersonalInfoSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user=user)  # assign user from token
+            serializer.save(user=user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -64,6 +62,15 @@ class PersonalInfoRetrieveUpdateDelete(APIView):
             return None
 
     def get(self, request, pk):
+        # GET is public, no token required
+        personalInfo = self.get_object(pk)
+        if not personalInfo:
+            return Response({'error': 'PersonalInfo not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = PersonalInfoSerializer(personalInfo)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        # PUT requires token
         user, error = get_user_from_token(request)
         if error:
             return error
@@ -72,18 +79,6 @@ class PersonalInfoRetrieveUpdateDelete(APIView):
         if not personalInfo:
             return Response({'error': 'PersonalInfo not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = PersonalInfoSerializer(personalInfo)
-        return Response(serializer.data)
-
-    def put(self, request, pk):
-        user, error = get_user_from_token(request)
-        if error:
-            return error
-
-        experience = self.get_object(pk)
-        if not experience:
-            return Response({'error': 'Experience not found'}, status=status.HTTP_404_NOT_FOUND)
-
         serializer = PersonalInfoSerializer(personalInfo, data=request.data)
         if serializer.is_valid():
             serializer.save(user=user)
@@ -91,13 +86,14 @@ class PersonalInfoRetrieveUpdateDelete(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
+        # DELETE requires token
         user, error = get_user_from_token(request)
         if error:
             return error
 
-        experience = self.get_object(pk)
-        if not experience:
-            return Response({'error': 'Experience not found'}, status=status.HTTP_404_NOT_FOUND)
+        personalInfo = self.get_object(pk)
+        if not personalInfo:
+            return Response({'error': 'PersonalInfo not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        experience.delete()
-        return Response({'message': 'Experience deleted'}, status=status.HTTP_204_NO_CONTENT)
+        personalInfo.delete()
+        return Response({'message': 'PersonalInfo deleted'}, status=status.HTTP_204_NO_CONTENT)

@@ -32,15 +32,13 @@ def get_user_from_token(request):
 class EducationListCreate(APIView):
 
     def get(self, request):
-        user, error = get_user_from_token(request)
-        if error:
-            return error
-
-        educations = Education.objects.filter(user=user)
+        # GET is public
+        educations = Education.objects.all()
         serializer = EducationSerializer(educations, many=True)
         return Response(serializer.data)
 
     def post(self, request):
+        # POST requires token
         user, error = get_user_from_token(request)
         if error:
             return error
@@ -63,18 +61,16 @@ class EducationRetrieveUpdateDelete(APIView):
             return None
 
     def get(self, request, pk):
-        user, error = get_user_from_token(request)
-        if error:
-            return error
-
+        # GET is public
         education = self.get_object(pk)
-        if not education or education.user != user:
+        if not education:
             return Response({'error': 'Education not found'}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = EducationSerializer(education)
         return Response(serializer.data)
 
     def put(self, request, pk):
+        # PUT requires token
         user, error = get_user_from_token(request)
         if error:
             return error
@@ -90,6 +86,7 @@ class EducationRetrieveUpdateDelete(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
+        # DELETE requires token
         user, error = get_user_from_token(request)
         if error:
             return error
