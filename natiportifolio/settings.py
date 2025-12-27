@@ -12,16 +12,16 @@ import dj_database_url
 # --------------------------------------------------
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR / ".env")
+load_dotenv(BASE_DIR / ".env")  # loads environment variables from .env
 
 # --------------------------------------------------
 # CORE SETTINGS
 # --------------------------------------------------
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-DEBUG = os.getenv("DEBUG") == "True"
+SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-key")  # fallback for dev
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")  # supports multiple hosts
 
 AUTH_USER_MODEL = "users.User"
 
@@ -31,6 +31,13 @@ AUTH_USER_MODEL = "users.User"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# --------------------------------------------------
+# STATIC
+# --------------------------------------------------
+
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"  # collectstatic target for deployment
 
 # --------------------------------------------------
 # INSTALLED APPS
@@ -76,12 +83,10 @@ MIDDLEWARE = [
 # CORS
 # --------------------------------------------------
 
-CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:5500",
-    "http://localhost:5500",
-    "http://127.0.0.1:3000",
-    "http://localhost:3000",
-]
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -112,7 +117,7 @@ TEMPLATES = [
 ]
 
 # --------------------------------------------------
-# DATABASE (SUPABASE)
+# DATABASE (SUPABASE / PostgreSQL)
 # --------------------------------------------------
 
 DATABASES = {
@@ -129,8 +134,8 @@ DATABASES = {
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.getenv("EMAIL_HOST")
-EMAIL_PORT = int(os.getenv("EMAIL_PORT"))
-EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS") == "True"
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
@@ -156,8 +161,7 @@ USE_I18N = True
 USE_TZ = True
 
 # --------------------------------------------------
-# STATIC
+# DEFAULT AUTO FIELD
 # --------------------------------------------------
 
-STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
