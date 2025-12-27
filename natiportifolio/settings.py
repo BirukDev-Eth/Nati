@@ -3,25 +3,23 @@ Django settings for natiportifolio project.
 """
 
 from pathlib import Path
-import os
-from dotenv import load_dotenv
 import dj_database_url
 
 # --------------------------------------------------
-# BASE DIR & ENV
+# BASE DIR
 # --------------------------------------------------
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR / ".env")  # loads environment variables from .env
 
 # --------------------------------------------------
 # CORE SETTINGS
 # --------------------------------------------------
 
-SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-key")
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = True
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
+SECRET_KEY = "django-insecure-oolu!si8e#+ld159_g%$4l_i2=amj7@d^l-b!s=m5se-rbz+s*"
+
+ALLOWED_HOSTS = ["*"]
 
 AUTH_USER_MODEL = "users.User"
 
@@ -83,10 +81,7 @@ MIDDLEWARE = [
 # CORS
 # --------------------------------------------------
 
-# Allow all origins (for development/testing)
 CORS_ALLOW_ALL_ORIGINS = True
-
-# If you plan to use cookies or Authorization headers
 CORS_ALLOW_CREDENTIALS = True
 
 # --------------------------------------------------
@@ -121,7 +116,7 @@ TEMPLATES = [
 
 DATABASES = {
     "default": dj_database_url.parse(
-        os.getenv("DATABASE_URL"),
+        "postgresql://postgres.myeephylmlbtoathshtm:strongpasswordgoodme@aws-1-eu-west-1.pooler.supabase.com:5432/postgres",
         conn_max_age=600,
         ssl_require=True,
     )
@@ -132,12 +127,12 @@ DATABASES = {
 # --------------------------------------------------
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = os.getenv("EMAIL_HOST")
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
-EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "eyasuone01@gmail.com"
+EMAIL_HOST_PASSWORD = "mzoa evwn wrks tomf"
+DEFAULT_FROM_EMAIL = "eyasuone01@gmail.com"
 
 # --------------------------------------------------
 # PASSWORD VALIDATION
