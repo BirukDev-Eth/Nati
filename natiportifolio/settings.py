@@ -18,10 +18,10 @@ load_dotenv(BASE_DIR / ".env")  # loads environment variables from .env
 # CORE SETTINGS
 # --------------------------------------------------
 
-SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-key")  # fallback for dev
+SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-key")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")  # supports multiple hosts
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
 AUTH_USER_MODEL = "users.User"
 
@@ -37,7 +37,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 # --------------------------------------------------
 
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"  # collectstatic target for deployment
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # --------------------------------------------------
 # INSTALLED APPS
@@ -69,7 +69,7 @@ INSTALLED_APPS = [
 # --------------------------------------------------
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",  # must be at the top
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -83,11 +83,10 @@ MIDDLEWARE = [
 # CORS
 # --------------------------------------------------
 
-
+# Allow all origins (for development/testing)
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
 
-
+# If you plan to use cookies or Authorization headers
 CORS_ALLOW_CREDENTIALS = True
 
 # --------------------------------------------------
@@ -117,7 +116,7 @@ TEMPLATES = [
 ]
 
 # --------------------------------------------------
-# DATABASE (SUPABASE / PostgreSQL)
+# DATABASE
 # --------------------------------------------------
 
 DATABASES = {
