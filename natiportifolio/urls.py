@@ -12,5 +12,7 @@ urlpatterns = [
     path('api/customer/', include('apps.customer.urls')),
     path("api/contacts/", include("apps.customeremail.urls")),
     path("api/contact-reply/", include("apps.contactreplay.urls")),
+    path("api/testimonies/", include("apps.testimonies.urls")),
+    path("api/password-reset/", include("apps.tokenWithForgetPassword.urls")),
 
 ]

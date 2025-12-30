@@ -60,6 +60,8 @@ INSTALLED_APPS = [
     "apps.customer",
     "apps.customeremail",
     "apps.contactreplay",
+    "apps.testimonies",
+    "apps.tokenWithForgetPassword"
 ]
 
 import os
